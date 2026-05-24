@@ -51,9 +51,13 @@ async function ensureInit() {
     await s.spreadsheets.batchUpdate({ spreadsheetId: SPREADSHEET_ID, requestBody: { requests: toAdd } });
   }
 
-  const txHead = await readRange(`${TX_SHEET}!A1:E1`);
-  if (!txHead.length)
-    await writeRange(`${TX_SHEET}!A1:E1`, [["id", "description", "amount", "category", "created_at"]]);
+  const txHead = await readRange(`${TX_SHEET}!A1:F1`);
+  if (!txHead.length) {
+    await writeRange(`${TX_SHEET}!A1:F1`, [["id", "description", "amount", "category", "created_at", "person"]]);
+  } else if (!txHead[0][5]) {
+    // Add person column to existing sheet
+    await writeRange(`${TX_SHEET}!F1`, [["person"]]);
+  }
 
   const setRows = await readRange(`${SET_SHEET}!A1:B2`);
   if (!setRows.length)
@@ -105,8 +109,8 @@ async function deleteSheetRow(sheet, zeroBasedRowIndex) {
 }
 
 // ── Domain helpers ──────────────────────────────────────────────────────────
-function rowToTx([id, description, amount, category, created_at]) {
-  return { id, description, amount: parseFloat(amount), category, created_at };
+function rowToTx([id, description, amount, category, created_at, person]) {
+  return { id, description, amount: parseFloat(amount), category, created_at, person: person || "Unknown" };
 }
 
 async function getAllTx() {
@@ -184,7 +188,7 @@ router.get("/transactions", async (req, res, next) => {
 
 router.post("/transactions", async (req, res, next) => {
   try {
-    const { description, amount, category = "General" } = req.body;
+    const { description, amount, category = "General", person = "Unknown" } = req.body;
     if (!description?.trim()) return res.status(400).json({ detail: "description is required" });
     if (!amount || amount <= 0) return res.status(400).json({ detail: "amount must be positive" });
 
@@ -192,9 +196,9 @@ router.post("/transactions", async (req, res, next) => {
     const rounded = Math.round(amount * 100) / 100;
     const created_at = new Date().toISOString().replace(/\.\d+Z$/, "Z");
 
-    await appendRow(TX_SHEET, [id, description.trim(), String(rounded), category, created_at]);
+    await appendRow(TX_SHEET, [id, description.trim(), String(rounded), category, created_at, person]);
 
-    const transaction = { id, description: description.trim(), amount: rounded, category, created_at };
+    const transaction = { id, description: description.trim(), amount: rounded, category, created_at, person };
     const [settings, txList] = await Promise.all([getSettings(), getAllTx()]);
     res.status(201).json({ transaction, budget_status: await buildStatus(settings, txList) });
   } catch (e) { next(e); }

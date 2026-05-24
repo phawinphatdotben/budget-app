@@ -3,6 +3,8 @@ import BudgetStatus from "./components/BudgetStatus";
 import BudgetSettings from "./components/BudgetSettings";
 import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
+import PersonSelector from "./components/PersonSelector";
+import MonthlyChart from "./components/MonthlyChart";
 import "./index.css";
 
 const API = "/api";
@@ -17,6 +19,12 @@ export default function App() {
   const [transactions, setTransactions] = useState([]);
   const [month, setMonth] = useState(currentMonth);
   const [error, setError] = useState(null);
+  const [person, setPerson] = useState(() => localStorage.getItem("budget_person") || "Dad");
+
+  function handlePersonChange(p) {
+    setPerson(p);
+    localStorage.setItem("budget_person", p);
+  }
 
   const fetchBudget = useCallback(async () => {
     try {
@@ -58,9 +66,11 @@ export default function App() {
 
       {error && <div className="alert over">{error}</div>}
 
+      <PersonSelector person={person} onChange={handlePersonChange} />
       <BudgetStatus status={status} />
       <BudgetSettings status={status} onUpdate={setStatus} />
-      <TransactionForm onCreated={handleCreated} />
+      <MonthlyChart />
+      <TransactionForm onCreated={handleCreated} person={person} />
       <TransactionList
         transactions={transactions}
         month={month}

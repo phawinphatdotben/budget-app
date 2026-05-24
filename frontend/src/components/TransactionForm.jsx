@@ -9,7 +9,7 @@ const CATEGORY_ICONS = {
   Health: "💊", Shopping: "🛍️", Other: "📦", General: "💳",
 };
 
-export default function TransactionForm({ onCreated }) {
+export default function TransactionForm({ onCreated, person }) {
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("General");
@@ -22,7 +22,7 @@ export default function TransactionForm({ onCreated }) {
       const res = await fetch(`${API}/transactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: desc, amount: parseFloat(amount), category }),
+        body: JSON.stringify({ description: desc, amount: parseFloat(amount), category, person }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -42,7 +42,7 @@ export default function TransactionForm({ onCreated }) {
 
   return (
     <div className="card">
-      <h2>Add transaction</h2>
+      <h2>Add transaction <span className={`person-badge ${person === "Dad" ? "dad" : "mom"}`}>{person === "Dad" ? "👨 Dad" : "👩 Mom"}</span></h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Description</label>

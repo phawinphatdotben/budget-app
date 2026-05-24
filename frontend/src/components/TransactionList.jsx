@@ -41,6 +41,11 @@ export default function TransactionList({ transactions, month, onMonthChange, on
                 <strong>{tx.description}</strong>
                 <span>{tx.category} &middot; {fmtDate(tx.created_at)}</span>
               </div>
+              {tx.person && tx.person !== "Unknown" && (
+                <span className={`person-badge ${tx.person === "Dad" ? "dad" : "mom"}`}>
+                  {tx.person === "Dad" ? "👨" : "👩"} {tx.person}
+                </span>
+              )}
               <span className="tx-amount">-฿{tx.amount.toFixed(2)}</span>
               <button className="tx-delete" onClick={() => handleDelete(tx.id)} title="Delete">✕</button>
             </li>

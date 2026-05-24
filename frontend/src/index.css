@@ -108,3 +108,26 @@ label { font-size: 0.8rem; color: var(--muted); margin-bottom: 3px; display: blo
 
 .month-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
 .month-row input[type="month"] { flex: 1; }
+
+/* Person selector */
+.person-selector { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+.person-label { font-size: 0.875rem; color: var(--muted); font-weight: 500; }
+.person-btns { display: flex; gap: 8px; }
+.person-btn {
+  background: var(--bg); border: 2px solid var(--border); border-radius: 99px;
+  color: var(--muted); cursor: pointer; font-size: 0.9rem; font-weight: 600;
+  padding: 7px 18px; transition: all 0.15s;
+}
+.person-btn:hover { border-color: var(--muted); color: var(--text); }
+.person-btn.active.dad { background: rgba(59,130,246,0.15); border-color: #3b82f6; color: #3b82f6; }
+.person-btn.active.mom { background: rgba(236,72,153,0.15); border-color: #ec4899; color: #ec4899; }
+
+/* Person badge */
+.person-badge {
+  font-size: 0.72rem; font-weight: 600; padding: 2px 8px;
+  border-radius: 99px; white-space: nowrap; flex-shrink: 0;
+}
+.person-badge.dad { background: rgba(59,130,246,0.15); color: #3b82f6; }
+.person-badge.mom { background: rgba(236,72,153,0.15); color: #ec4899; }
+
+h2 .person-badge { font-size: 0.75rem; margin-left: 8px; vertical-align: middle; }
